@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Giriş • Not Defteri</title>
+  <style>
+    body {font-family:sans-serif;background:#f4f4f4;display:flex;align-items:center;justify-content:center;height:100vh}
+    .card {background:white;padding:30px 40px;border-radius:8px;box-shadow:0 0 10px #bbb;width:320px}
+    h2 {text-align:center;margin-top:0}
+    input {width:100%;padding:10px;margin:8px 0;border:1px solid #aaa;border-radius:4px}
+    button {width:100%;padding:10px;background:#007bff;color:#fff;border:0;border-radius:4px;font-size:16px;cursor:pointer}
+    button:hover {background:#0056b3}
+    small {display:block;text-align:center;margin-top:10px;color:red}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Giriş Yap</h2>
+    <input id="email"  type="email"    placeholder="Email"   required />
+    <input id="password" type="password" placeholder="Şifre"  required />
+    <button id="loginBtn">Giriş</button>
+    <small id="msg"></small>
+    <hr>
+    <h2>Kayıt Ol</h2>
+    <input id="regEmail"  type="email"    placeholder="Email"   required />
+    <input id="regPassword" type="password" placeholder="Şifre"  required />
+    <button id="registerBtn">Kaydol</button>
+  </div>
+
+  <script>
+    const msg = document.getElementById('msg');
+
+    async function request(endpoint, body) {
+        const res = await fetch(endpoint, {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify(body)
+        });
+        return res.json();
+    }
+
+    // ----- GİRİŞ -----
+    document.getElementById('loginBtn').onclick = async () => {
+        const email    = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        const data = await request('/auth/login', { email, password });
+
+        if (data.token) {
+        localStorage.setItem('token', data.token);     // 🔑
+        location.href = 'index.html';                  // ➜ not ekranı
+        } else {
+        msg.textContent = data.error || 'Giriş başarısız';
+        }
+        document.getElementById('email').value="";
+        document.getElementById('password').value="";
+    };
+
+    // ----- KAYIT -----
+    document.getElementById('registerBtn').onclick = async () => {
+        const email    = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+
+        const data = await request('/auth/register', { email, password });
+
+        if (data.token) {
+        localStorage.setItem('token', data.token);
+        location.href = 'index.html';
+        } else {
+        msg.textContent = data.error || 'Kayıt başarısız';
+        }
+        document.getElementById('regEmail').value = "";
+        document.getElementById('regPassword').value = "";
+    };
+    </script>
+</body>
+</html>

@@ -8,7 +8,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const app = express();
-app.use(express.static('public'));
+
 app.use(express.json()); //json gövdelerini parse etmemizi sağlıyor
 app.use("/auth", authRoutes);
 app.use(noteRoutes);
@@ -26,6 +26,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+app.use(express.static('public'));
 //Sunucuyu Başlatma
 const PORT = process.env.PORT;
 
